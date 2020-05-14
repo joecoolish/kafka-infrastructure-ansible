@@ -1,10 +1,6 @@
 - name: Create Azure VMs
   hosts: localhost
   connection: local
-  vars:
-    rg: confluent-kafka
-    vnet: kafka-vnet
-    storage: wellspringkafka
   tasks:
   - name: Create virtual network
     azure_rm_virtualnetwork:
@@ -169,7 +165,7 @@
       ssh_password_enabled: false
       ssh_public_keys:
         - path: /home/kafka/.ssh/authorized_keys
-          key_data: <KEY DATA> kafka@azure-server
+          key_data: "{{rsa_public}} kafka@azure-server"
       network_interfaces: "{{'nic-%02d' | format(item|int)}}"
       managed_disk_type: Premium_LRS
       image:
