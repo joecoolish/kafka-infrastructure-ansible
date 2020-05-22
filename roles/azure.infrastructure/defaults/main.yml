@@ -1,3 +1,4 @@
+ssh_path: id_ssh_rsa
 region: eastus
 rg: kafka
 project: kafkaazure

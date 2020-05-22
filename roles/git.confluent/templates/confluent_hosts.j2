@@ -1,0 +1,78 @@
+---
+all:
+  vars:
+    ansible_ssh_private_key_file: {{ssh_path}}
+    {% for var in confluent_global %}
+{{var}}: {{confluent_global[var]}}
+    {% endfor %}
+
+{% for group in groups | difference(['all', 'ungrouped']) %}
+{{group}}:
+  hosts:
+{% for host in groups[group] %}
+    {{ host }}:
+      ansible_ssh_host:
+{% if hostvars[host].confluent_host is defined %}
+{% for var in hostvars[host].confluent_host%}
+      {{var}}: {{hostvars[host].confluent_host[var]}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+zookeeper:
+  hosts:
+    {% for host in groups['zookeeper'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+
+
+zookeeper:
+  hosts:
+    {% for host in groups['zookeeper'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+      
+kafka_broker:
+  hosts:
+    {% for host in groups['kafka_broker'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+
+schema_registry:
+  hosts:
+    {% for host in groups['schema_registry'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+
+kafka_rest:
+  hosts:
+    {% for host in groups['kafka_rest'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+
+ksql:
+  hosts:
+    {% for host in groups['ksql'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+
+kafka_connect:
+  hosts:
+    {% for host in groups['kafka_connect'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}
+
+control_center:
+  hosts:
+    {% for host in groups['control_center'] %}
+{{ host }}:
+      ansible_ssh_host:
+    {% endfor %}

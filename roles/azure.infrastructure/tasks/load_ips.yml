@@ -1,0 +1,24 @@
+- name: Create public IP address
+  azure_rm_publicipaddress:
+    resource_group: "{{ rg }}"
+    allocation_method: Static
+    domain_name: "{{project}}-{{name}}"
+    name: "pub-ip-{{name}}"
+  async: 6000
+  poll: 0
+  tags: ips
+  loop: "{{ vm_names }}"
+  loop_control:
+    loop_var: "name"
+  register: output_ip_address_async
+
+- name: Check ip sync status
+  async_status:
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ output_ip_address_async.results }}"
+  loop_control:
+    loop_var: "async_result_item"
+  register: output_ip_address
+  tags: ips
+  until: output_ip_address.finished
+  retries: 30

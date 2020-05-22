@@ -1,0 +1,18 @@
+- git:
+    repo: 'https://github.com/confluentinc/cp-ansible.git'
+    dest: cp-ansible
+- name: Copy SSH token
+  copy:
+    src: "{{ssh_path}}"
+    dest: cp-ansible/{{ssh_path}}
+- name: Load IPs
+  include_role:
+    name: azure.infrastructure
+    tasks_from: load_ips
+  when: output_ip_address is not defined
+- debug: 
+    msg: "{{output_ip_address}}"
+- name: Create confludent hosts.yml file
+  template:
+    src: confluent_hosts.j2
+    dest: cp-ansible/hosts.yml

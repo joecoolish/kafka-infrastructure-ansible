@@ -1,10 +1,10 @@
 - name: check if ssh key exists
   stat: 
-    path: id_ssh_rsa
+    path: "{{ssh_path}}"
   register: ssh_exists
 - name: Create SSH Key
   openssh_keypair:
-    path: id_ssh_rsa
+    path: "{{ssh_path}}"
     force: True
   async: 6000
   poll: 0

@@ -1,8 +1,10 @@
 - name: Host Prerequisites
   hosts: localhost 
-  #zookeeper:kafka_broker:schema_registry:kafka_connect:ksql:control_center:kafka_rest
   gather_facts: no
   tasks:
-  - name: Create the Azure Infrastructure
+  # - name: Create the Azure Infrastructure
+  #   import_role:
+  #     name: azure.infrastructure
+  - name: Checkout Confluent playbook
     import_role:
-      name: azure.infrastructure
+      name: git.confluent

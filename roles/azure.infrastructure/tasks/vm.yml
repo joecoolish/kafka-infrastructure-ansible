@@ -191,7 +191,7 @@
     ssh_password_enabled: false
     ssh_public_keys:
       - path: /home/kafka/.ssh/authorized_keys
-        key_data: "{{ssh.public_key if ssh is defined and ssh.public_key is defined else lookup('file', 'id_ssh_rsa.pub')}} kafka@azure-server"
+        key_data: "{{ssh.public_key if ssh is defined and ssh.public_key is defined else lookup('file', '{{ssh_path}}.pub')}} kafka@azure-server"
     network_interfaces: "nic-{{name}}"
     managed_disk_type: Premium_LRS
     os_disk_name: "os-disk-{{name}}"    
