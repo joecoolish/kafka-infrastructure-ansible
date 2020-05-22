@@ -1,0 +1,44 @@
+- name: Configure Common environment
+  include_tasks: common.yml
+
+- name: Build Zookeeper Infrastructure
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['zookeeper']}}"
+
+- name: Build Broker Infrastructure
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['kafka_broker']}}"
+
+- name: Build Schema Registry
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['schema_registry']}}"
+
+- name: Build Kafka REST
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['kafka_rest']}}"
+
+- name: Build ksql
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['ksql']}}"
+
+- name: Build Connect
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['kafka_connect']}}"
+
+- name: Build Control Center
+  include_tasks: vm.yml
+  vars:
+    name: "{{item}}"
+  with_items: "{{groups['control_center']}}"

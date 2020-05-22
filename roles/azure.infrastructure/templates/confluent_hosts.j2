@@ -1,18 +1,17 @@
 ---
 all:
   vars:
-    rg: kafka-test
-    project: kafkatest
-    vnet: kafka-test-vnet
-    vnet_address: 10.100.0.0/16
-    subnet_address: 10.100.1.0/24
-    storage: kafkateststorage2
+    ansible_connection: ssh
+    ansible_user: kafka
+    ansible_become: true
+    ansible_ssh_private_key_file: id_ssh_rsa
 
 zookeeper:
   hosts:
-    vm-01:
-    vm-02:      
-    vm-03:
+    {% for host in groups['zookeeper'] %}
+      {{ host }}:
+        ansible_ssh_host: {{  }}
+    {% endfor %}
       
 kafka_broker:
   hosts:

@@ -1,0 +1,36 @@
+- name: Create SSH Key
+  openssh_keypair:
+    path: id_ssh_rsa
+    force: True
+  async: 6000
+  poll: 0
+  register: ssh_async
+- name: Create a resource group
+  azure_rm_resourcegroup:
+    name: "{{ rg }}"
+    location: eastus
+- name: Create virtual network
+  azure_rm_virtualnetwork:
+    resource_group: "{{ rg }}"
+    name: "{{ vnet }}"
+    address_prefixes: "{{vnet_address}}"
+- name: Create storage account
+  azure_rm_storageaccount:
+    resource_group: "{{ rg }}"
+    account_type: Premium_LRS
+    name: "{{ storage }}"
+    kind: StorageV2
+  async: 6000
+  poll: 0
+- name: Add subnet
+  azure_rm_subnet:
+    resource_group: "{{ rg }}"
+    name: vms
+    address_prefix: "{{subnet_address}}"
+    virtual_network: "{{ vnet }}"
+- name: Check ssh sync status
+  async_status:
+    jid: "{{ ssh_async.ansible_job_id }}"
+  register: ssh
+  until: ssh.finished
+  retries: 30

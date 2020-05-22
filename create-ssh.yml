@@ -1,0 +1,11 @@
+- name: Create SSH Key
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Create SSH Key
+    openssh_keypair:
+        path: id_ssh_rsa
+        force: True
+    register: ssh
+  - debug:
+        msg: "ssh pub key - {{ssh.public_key}}"

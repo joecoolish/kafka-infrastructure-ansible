@@ -1,0 +1,21 @@
+- name: Create SSH Key
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+  - name: Create SSH Key
+    openssh_keypair:
+        path: id_ssh_rsa
+        force: True
+    
+    async: 45
+    poll: 0
+    register: ssh_async
+  - name: Check sync status
+    async_status:
+      jid: "{{ ssh_async.ansible_job_id }}"
+    register: async_poll_results
+    until: async_poll_results.finished
+    retries: 30
+  - debug:
+        msg: "{{async_poll_results.public_key}}"

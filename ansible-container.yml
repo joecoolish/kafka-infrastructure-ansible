@@ -1,0 +1,17 @@
+- name: Create Azure VMs
+  hosts: servers
+  connection: local
+  gather_facts: no
+  vars:
+    rg: confluent-kafka
+    vnet: kafka-vnet
+    storage: kafkastorage
+    rsa_public: <YOUR RSA PUBLIC TOKEN>
+    project: yourkafkaproject
+  tasks:
+  - name: Test Ping
+    shell: ping -c 1 -w 2 10.100.1.5
+    ignore_errors: true
+    register: output
+  - debug:
+      msg: "{{output}}"
