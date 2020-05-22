@@ -1,0 +1,8 @@
+region: eastus
+rg: kafka
+project: kafkaazure
+vnet: kafka-vnet
+vnet_address: 10.0.0.0/16
+subnet_address: 10.0.1.0/24
+vm_size: Standard_F16s_v2
+vm_data_disk_size: 512

@@ -6,6 +6,9 @@
     name: "pub-ip-{{name}}"
   async: 6000
   poll: 0
+  loop: "{{ vm_names }}"
+  loop_control:
+    loop_var: "name"
   register: output_ip_address_async
 
 - name: Create Network Security Group that allows SSH
@@ -129,18 +132,27 @@
         direction: Outbound
   async: 6000
   poll: 0
+  loop: "{{ vm_names }}"
+  loop_control:
+    loop_var: "name"
   register: output_nsg_async
 
 - name: Check ip sync status
   async_status:
-    jid: "{{ output_ip_address_async.ansible_job_id }}"
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ output_ip_address_async.results }}"
+  loop_control:
+    loop_var: "async_result_item"
   register: output_ip_address
   until: output_ip_address.finished
   retries: 30
 
 - name: Check nsg sync status
   async_status:
-    jid: "{{ output_nsg_async.ansible_job_id }}"
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ output_nsg_async.results }}"
+  loop_control:
+    loop_var: "async_result_item"
   register: nsg
   until: nsg.finished
   retries: 30
@@ -153,17 +165,33 @@
     subnet: vms
     public_ip_name: "pub-ip-{{name}}"
     security_group: "nsg-{{name}}"
+  async: 6000
+  poll: 0
+  loop: "{{ vm_names }}"
+  loop_control:
+    loop_var: "name"
+  register: output_nic_async
+
+- name: Check nic sync status
+  async_status:
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ output_nic_async.results }}"
+  loop_control:
+    loop_var: "async_result_item"
+  register: nic
+  until: nic.finished
+  retries: 30
 
 - name: Create VM
   azure_rm_virtualmachine:
     resource_group: "{{ rg }}"
     name: "{{name}}"
-    vm_size: Standard_F16s_v2
+    vm_size: "{{hostvars[name]['vm_size'] | default(vm_size)}}"
     admin_username: kafka
     ssh_password_enabled: false
     ssh_public_keys:
       - path: /home/kafka/.ssh/authorized_keys
-        key_data: "{{ssh.public_key}} kafka@azure-server"
+        key_data: "{{ssh.public_key if ssh is defined and ssh.public_key is defined else lookup('file', 'id_ssh_rsa.pub')}} kafka@azure-server"
     network_interfaces: "nic-{{name}}"
     managed_disk_type: Premium_LRS
     os_disk_name: "os-disk-{{name}}"    
@@ -174,11 +202,25 @@
         version: latest
     data_disks:
       - lun: 0
-        disk_size_gb: 512
+        disk_size_gb: "{{hostvars[name]['vm_data_disk_size'] | default(vm_data_disk_size) | int}}"
         managed_disk_type: Premium_LRS
   async: 12000
   poll: 0
+  loop: "{{ vm_names }}"
+  loop_control:
+    loop_var: "name"
   register: output_vm_async
+
+- name: Check vm sync status
+  async_status:
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ output_vm_async.results }}"
+  loop_control:
+    loop_var: "async_result_item"
+  register: vms
+  until: vms.finished
+  retries: 60
+  delay: 10
 
 # - name: Create Managed Disks
 #   azure_rm_manageddisk:

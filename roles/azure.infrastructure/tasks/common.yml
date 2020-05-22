@@ -1,3 +1,7 @@
+- name: check if ssh key exists
+  stat: 
+    path: id_ssh_rsa
+  register: ssh_exists
 - name: Create SSH Key
   openssh_keypair:
     path: id_ssh_rsa
@@ -5,10 +9,11 @@
   async: 6000
   poll: 0
   register: ssh_async
+  when: ssh_exists.stat.exists == false
 - name: Create a resource group
   azure_rm_resourcegroup:
     name: "{{ rg }}"
-    location: eastus
+    location: "{{ region }}"
 - name: Create virtual network
   azure_rm_virtualnetwork:
     resource_group: "{{ rg }}"
@@ -34,3 +39,4 @@
   register: ssh
   until: ssh.finished
   retries: 30
+  when: ssh_exists.stat.exists == false

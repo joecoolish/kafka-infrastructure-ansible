@@ -1,55 +1,49 @@
 - name: Configure Common environment
   include_tasks: common.yml
 
-- name: Build Zookeeper Infrastructure
+- name: Build Infrastructure
   include_tasks: vm.yml
   vars:
-    name: "{{item}}"
-  with_items: "{{groups['zookeeper']}}"
+    vm_names: "{{groups['zookeeper'] + groups['kafka_broker'] + groups['schema_registry'] + groups['kafka_rest'] + groups['ksql'] + groups['kafka_connect'] + groups['control_center'] | unique}}"
 
-- name: Build Broker Infrastructure
-  include_tasks: vm.yml
-  vars:
-    name: "{{item}}"
-  with_items: "{{groups['kafka_broker']}}"
+# - name: Build Zookeeper Infrastructure
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['zookeeper']}}"
 
-- name: Build Schema Registry
-  include_tasks: vm.yml
-  vars:
-    name: "{{item}}"
-  with_items: "{{groups['schema_registry']}}"
+# - name: Build Broker Infrastructure
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['kafka_broker']}}"
 
-- name: Build Kafka REST
-  include_tasks: vm.yml
-  vars:
-    name: "{{item}}"
-  with_items: "{{groups['kafka_rest']}}"
+# - name: Build Schema Registry
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['schema_registry']}}"
 
-- name: Build ksql
-  include_tasks: vm.yml
-  vars:
-    name: "{{item}}"
-  with_items: "{{groups['ksql']}}"
+# - name: Build Kafka REST
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['kafka_rest']}}"
 
-- name: Build Connect
-  include_tasks: vm.yml
-  vars:
-    name: "{{item}}"
-  with_items: "{{groups['kafka_connect']}}"
+# - name: Build ksql
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['ksql']}}"
 
-- name: Build Control Center
-  include_tasks: vm.yml
-  vars:
-    name: "{{item}}"
-  with_items: "{{groups['control_center']}}"
+# - name: Build Connect
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['kafka_connect']}}"
 
-
-- name: Check sync status
-  async_status:
-    jid: "{{ async_result_item.ansible_job_id }}"
-  loop: "{{ output_vm_async.results }}"
-  loop_control:
-    loop_var: "async_result_item"
-  register: async_poll_results
-  until: async_poll_results.finished
-  retries: 30
+# - name: Build Control Center
+#   include_tasks: vm.yml
+#   vars:
+#     name: "{{item}}"
+#   with_items: "{{groups['control_center']}}"
