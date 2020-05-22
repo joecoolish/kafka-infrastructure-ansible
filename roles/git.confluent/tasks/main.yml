@@ -5,6 +5,7 @@
   copy:
     src: "{{ssh_path}}"
     dest: cp-ansible/{{ssh_path}}
+    mode: '600'
 
 - name: Load IPs
   include_role:

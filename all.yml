@@ -2,9 +2,15 @@
   hosts: localhost 
   gather_facts: no
   tasks:
-  # - name: Create the Azure Infrastructure
-  #   import_role:
-  #     name: azure.infrastructure
+  - name: Create the Azure Infrastructure
+    import_role:
+      name: azure.infrastructure
+    tags: 
+      - azure
+      - setup
   - name: Checkout Confluent playbook
     import_role:
       name: git.confluent
+    tags:
+      - confluent
+      - setup
