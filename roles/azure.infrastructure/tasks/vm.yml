@@ -166,19 +166,26 @@
         key_data: "{{ssh.public_key}} kafka@azure-server"
     network_interfaces: "nic-{{name}}"
     managed_disk_type: Premium_LRS
-    os_disk_name: "os-disk-{{name}}"
+    os_disk_name: "os-disk-{{name}}"    
     image:
         offer: CentOS
         publisher: OpenLogic
         sku: '7.5'
         version: latest
-
-- name: Create Managed Disks
-  azure_rm_manageddisk:
-    resource_group: "{{ rg }}"
-    name: "data-disk-{{name}}"
-    storage_account_type: Premium_LRS
-    managed_by: "{{name}}"
-    disk_size_gb: 512
-  async: 6000
+    data_disks:
+      - lun: 0
+        disk_size_gb: 512
+        managed_disk_type: Premium_LRS
+  async: 12000
   poll: 0
+  register: output_vm_async
+
+# - name: Create Managed Disks
+#   azure_rm_manageddisk:
+#     resource_group: "{{ rg }}"
+#     name: "data-disk-{{name}}"
+#     storage_account_type: Premium_LRS
+#     managed_by: "{{name}}"
+#     disk_size_gb: 512
+#   async: 6000
+#   poll: 0
