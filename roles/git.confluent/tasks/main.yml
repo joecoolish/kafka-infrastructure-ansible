@@ -5,13 +5,15 @@
   copy:
     src: "{{ssh_path}}"
     dest: cp-ansible/{{ssh_path}}
+
 - name: Load IPs
   include_role:
     name: azure.infrastructure
     tasks_from: load_ips
+  vars:
+    vm_names: "{{groups['zookeeper'] + groups['kafka_broker'] + groups['schema_registry'] + groups['kafka_rest'] + groups['ksql'] + groups['kafka_connect'] + groups['control_center'] | unique}}"
+      
   when: output_ip_address is not defined
-- debug: 
-    msg: "{{output_ip_address}}"
 - name: Create confludent hosts.yml file
   template:
     src: confluent_hosts.j2
