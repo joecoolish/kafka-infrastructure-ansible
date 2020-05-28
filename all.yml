@@ -14,3 +14,12 @@
     tags:
       - confluent
       - setup
+
+- name: Attach drives to hosts
+  hosts: zookeeper:kafka_broker:schema_registry:kafka_connect:ksql:control_center:kafka_rest
+  tasks:
+  - name: Attach drives
+    import_role: 
+      name: azure.infrastructure
+      tasks_from: mount_disk.yml
+
