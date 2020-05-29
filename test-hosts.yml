@@ -3,6 +3,25 @@
   #zookeeper:kafka_broker:schema_registry:kafka_connect:ksql:control_center:kafka_rest
   gather_facts: no
   tasks:
-  - debug:
-        msg: "{{item}}"
-    with_items: "{{groups['zookeeper']}}"
+  - name: Get IPs
+    include_role:
+      name: azure.infrastructure
+      tasks_from: load_ips
+    vars:
+      vm_names: "{{groups['zookeeper'] + groups['kafka_broker'] + groups['schema_registry'] + groups['kafka_rest'] + groups['ksql'] + groups['kafka_connect'] + groups['control_center'] | unique}}"      
+    when: output_ip_address is not defined
+
+  - name: Set ansible_host  
+    set_fact:
+      ansible_host: "{% for ip_res in output_ip_address.results %}{% if ip_res.state.name.endswith(item) %}{{ip_res.state.ip_address}}{% endif %}{% endfor %}"
+      ansible_user: kafka
+      ansible_ssh_private_key_file: ./id_ssh_rsa
+    delegate_to: "{{ item }}"
+    delegate_facts: True
+    with_items: "{{ groups['all'] }}"
+    when: item != "localhost"
+
+- name: ping
+  hosts: zookeeper:kafka_broker:schema_registry:kafka_connect:ksql:control_center:kafka_rest
+  tasks:
+  - ping:

@@ -188,6 +188,7 @@
     name: "{{name}}"
     vm_size: "{{hostvars[name]['vm_size'] | default(vm_size)}}"
     admin_username: kafka
+    # TODO: Bring this property to the front
     ssh_password_enabled: false
     ssh_public_keys:
       - path: /home/kafka/.ssh/authorized_keys
