@@ -4,4 +4,4 @@
 - name: Build Infrastructure
   include_tasks: vm.yml
   vars:
-    vm_names: "{{groups['zookeeper'] + groups['kafka_broker'] + groups['schema_registry'] + groups['kafka_rest'] + groups['ksql'] + groups['kafka_connect'] + groups['control_center'] | unique}}"
+    vm_names: "{{(groups['zookeeper'] + groups['kafka_broker'] + groups['schema_registry'] + groups['kafka_rest'] + groups['ksql'] + groups['kafka_connect'] + groups['control_center']) | unique}}"
