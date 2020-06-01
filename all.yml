@@ -26,8 +26,8 @@
   - name: Set ansible_host  
     set_fact:
       ansible_host: "{% for ip_res in output_ip_address.results %}{% if ip_res.state.name.endswith(item) %}{{ip_res.state.ip_address}}{% endif %}{% endfor %}"
-      ansible_user: kafka
-      ansible_ssh_private_key_file: ./id_ssh_rsa
+      ansible_user: "{{confluent_global.ansible_user}}"
+      ansible_ssh_private_key_file: "./{{ssh_path}}"
     delegate_to: "{{ item }}"
     delegate_facts: True
     with_items: "{{ groups['all'] }}"

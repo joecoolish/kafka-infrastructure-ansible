@@ -4,7 +4,7 @@
   tasks:
   - name: Create SSH Key
     openssh_keypair:
-        path: id_ssh_rsa
+        path: "{{ssh_path}}"
         force: True
     register: ssh
   - name: Create virtual network
@@ -166,11 +166,11 @@
       resource_group: "{{ rg }}"
       name: "{{'vm-%02d' | format(item|int)}}"
       vm_size: Standard_F16s_v2
-      admin_username: kafka
+      admin_username: "{{confluent_global.ansible_user}}"
       ssh_password_enabled: false
       ssh_public_keys:
         - path: /home/kafka/.ssh/authorized_keys
-          key_data: "{{ssh.public_key}} kafka@azure-server"
+          key_data: "{{ssh.public_key}} {{confluent_global.ansible_user}}@azure-server"
       network_interfaces: "{{'nic-%02d' | format(item|int)}}"
       managed_disk_type: Premium_LRS
       image:

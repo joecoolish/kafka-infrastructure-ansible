@@ -75,7 +75,7 @@
         destination_port_range: 2181
         access: Allow
         priority: 1010
-        direction: Inbound        
+        direction: Inbound
       - name: Broker_out
         protocol: Tcp
         destination_port_range: 9091
@@ -187,20 +187,19 @@
     resource_group: "{{ rg }}"
     name: "{{name}}"
     vm_size: "{{hostvars[name]['vm_size'] | default(vm_size)}}"
-    admin_username: kafka
-    # TODO: Bring this property to the front
+    admin_username: "{{confluent_global.ansible_user}}"
     ssh_password_enabled: false
     ssh_public_keys:
       - path: /home/kafka/.ssh/authorized_keys
-        key_data: "{{ssh.public_key if ssh is defined and ssh.public_key is defined else lookup('file', '{{ssh_path}}.pub')}} kafka@azure-server"
+        key_data: "{{ssh.public_key if ssh is defined and ssh.public_key is defined else lookup('file', '{{ssh_path}}.pub')}} {{confluent_global.ansible_user}}@azure-server"
     network_interfaces: "nic-{{name}}"
     managed_disk_type: Premium_LRS
-    os_disk_name: "os-disk-{{name}}"    
+    os_disk_name: "os-disk-{{name}}"
     image:
-        offer: CentOS
-        publisher: OpenLogic
-        sku: '7.5'
-        version: latest
+      offer: CentOS
+      publisher: OpenLogic
+      sku: "7.5"
+      version: latest
     data_disks:
       - lun: 0
         disk_size_gb: "{{hostvars[name]['vm_data_disk_size'] | default(vm_data_disk_size) | int}}"
@@ -222,13 +221,3 @@
   until: vms.finished
   retries: 60
   delay: 10
-
-# - name: Create Managed Disks
-#   azure_rm_manageddisk:
-#     resource_group: "{{ rg }}"
-#     name: "data-disk-{{name}}"
-#     storage_account_type: Premium_LRS
-#     managed_by: "{{name}}"
-#     disk_size_gb: 512
-#   async: 6000
-#   poll: 0

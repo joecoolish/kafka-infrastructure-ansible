@@ -1,5 +1,5 @@
 - name: check if ssh key exists
-  stat: 
+  stat:
     path: "{{ssh_path}}"
   register: ssh_exists
 - name: Create SSH Key
@@ -18,7 +18,8 @@
   azure_rm_virtualnetwork:
     resource_group: "{{ rg }}"
     name: "{{ vnet }}"
-    address_prefixes: "{{vnet_address}}"
+    address_prefixes:
+      - "{{vnet_address}}"
 - name: Create storage account
   azure_rm_storageaccount:
     resource_group: "{{ rg }}"
